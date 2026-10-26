@@ -1,0 +1,72 @@
+{
+  "name": "TidyTools: website list → contacts + industry",
+  "nodes": [
+    {
+      "id": "6f1b2c4e-0a01-4b6e-9a51-000000000001",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "6f1b2c4e-0a01-4b6e-9a51-000000000002",
+      "name": "Websites",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0],
+      "parameters": {
+        "jsCode": "// Replace with your own list (Google Sheets, CRM, a form...).\nreturn ['stumptowncoffee.com', 'bluebottlecoffee.com', 'allbirds.com'].map((website) => ({ json: { website } }));"
+      }
+    },
+    {
+      "id": "6f1b2c4e-0a01-4b6e-9a51-000000000003",
+      "name": "Find contacts",
+      "type": "n8n-nodes-tidytools.tidyTools",
+      "typeVersion": 1,
+      "position": [440, 0],
+      "parameters": {
+        "resource": "contact",
+        "operation": "extract",
+        "url": "={{ $json.website }}",
+        "options": {
+          "maxPages": 5
+        }
+      }
+    },
+    {
+      "id": "6f1b2c4e-0a01-4b6e-9a51-000000000004",
+      "name": "Classify industry",
+      "type": "n8n-nodes-tidytools.tidyTools",
+      "typeVersion": 1,
+      "position": [660, 0],
+      "parameters": {
+        "resource": "classification",
+        "operation": "classify",
+        "inputType": "urls",
+        "urls": "={{ $json.domain || $('Websites').item.json.website }}",
+        "taxonomy": "industry",
+        "options": {
+          "analysisDepth": "quick",
+          "combineItems": true,
+          "maxTotalChargeUsd": 1
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [[{ "node": "Websites", "type": "main", "index": 0 }]]
+    },
+    "Websites": {
+      "main": [[{ "node": "Find contacts", "type": "main", "index": 0 }]]
+    },
+    "Find contacts": {
+      "main": [[{ "node": "Classify industry", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

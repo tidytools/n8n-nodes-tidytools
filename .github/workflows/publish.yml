@@ -1,0 +1,43 @@
+# Template for the standalone public repository whose root is this package.
+# Copy the English-only package source (including .github/) to that repository before tagging.
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install npm with Trusted Publishing support
+        run: npm install --global npm@11.5.1
+      - name: Verify npm supports Trusted Publishing
+        run: |
+          npm --version
+          NPM_VERSION=$(npm --version) node -e 'const v=process.env.NPM_VERSION.split(".").map(Number); if(v[0]<11 || (v[0]===11 && (v[1]<5 || (v[1]===5 && v[2]<1)))) process.exit(1)'
+      - name: Check tag matches package version
+        run: test "$GITHUB_REF_NAME" = "v$(node -p 'require("./package.json").version')"
+      - run: npm install --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Publish with provenance
+        # First release: user supplies a package-scoped npm token in NPM_TOKEN.
+        # Later releases may use npm Trusted Publishing with NPM_TOKEN unset.
+        # npm's OIDC provenance needs id-token: write and a public repository.
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"; fi
+          npm publish --provenance --access public --ignore-scripts
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

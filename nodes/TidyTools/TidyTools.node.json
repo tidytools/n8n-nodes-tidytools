@@ -1,0 +1,32 @@
+{
+	"node": "n8n-nodes-tidytools.tidyTools",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Marketing & Content", "Sales", "Utility"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/tidytools/n8n-nodes-tidytools#credentials"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/tidytools/n8n-nodes-tidytools#readme"
+			}
+		]
+	},
+	"alias": [
+		"contact extractor",
+		"email finder",
+		"lead enrichment",
+		"seo audit",
+		"web scraping",
+		"ai extraction",
+		"transcription",
+		"speech to text",
+		"podcast",
+		"website classification",
+		"rapidapi",
+		"apify"
+	]
+}

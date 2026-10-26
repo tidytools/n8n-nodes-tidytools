@@ -1,0 +1,59 @@
+{
+  "name": "TidyTools: SEO audit and AI extraction of one page",
+  "nodes": [
+    {
+      "id": "8a2d0f3c-1b02-4c7f-8b62-000000000001",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "8a2d0f3c-1b02-4c7f-8b62-000000000002",
+      "name": "SEO audit",
+      "type": "n8n-nodes-tidytools.tidyTools",
+      "typeVersion": 1,
+      "position": [240, -100],
+      "parameters": {
+        "resource": "seoAudit",
+        "operation": "audit",
+        "url": "https://www.python.org/",
+        "options": {
+          "checkLinks": 10
+        }
+      }
+    },
+    {
+      "id": "8a2d0f3c-1b02-4c7f-8b62-000000000003",
+      "name": "Extract fields with AI",
+      "type": "n8n-nodes-tidytools.tidyTools",
+      "typeVersion": 1,
+      "position": [240, 100],
+      "parameters": {
+        "resource": "aiExtract",
+        "operation": "extract",
+        "url": "https://www.python.org/downloads/",
+        "outputMode": "fields",
+        "fields": "latest_python_version, release_date, download_url",
+        "options": {
+          "instructions": "Use the latest stable release shown on the page."
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          { "node": "SEO audit", "type": "main", "index": 0 },
+          { "node": "Extract fields with AI", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
